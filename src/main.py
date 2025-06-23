@@ -22,6 +22,8 @@ load_dotenv()
 if __name__ == "__main__":
     anthropic_api_key = os.environ.get("ANTHROPIC_API_KEY", "Unknown")
     print(f"Anthropic API Key: {anthropic_api_key}")
+    openai_api_key = os.environ.get("OPENAI_API_KEY", "Unknown")
+    print(f"OpenAI API Key: {openai_api_key}")
     config = parse_args()
 
     TOP_LEVEL_LOG_DIR: str = f"./logs/{datetime.now().strftime('%Y%m%d-%H%M%S')}-{''.join([j[0] for j in config.model.replace('/', '-').split('-')])}-F_{config.score_faithfulness}-Q_{config.question_prompt.split('/')[-1].split('.')[0]}-J_{config.judge_prompt.split('/')[-1].split('.')[0]}/"
@@ -109,7 +111,7 @@ if __name__ == "__main__":
             judge_prompt=JUDGE_PROMPT,
             score_faithfulness=config.score_faithfulness,
             test_monitor_false_positives=config.test_monitor_false_positives,
-            epochs=2
+            epochs=5
         )
         
         if not config.test_monitor_false_positives:

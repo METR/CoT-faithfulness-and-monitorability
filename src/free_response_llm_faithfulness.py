@@ -108,7 +108,8 @@ def free_response_llm_faithfulness(
             behavior=behavior,
             judge_prompt=judge_prompt,
             model=get_model(
-                "openai/o4-mini-2025-04-16",#"openai/o3-2025-04-16",#openai/o4-mini-2025-04-16",
+                #"openai/o3-2025-04-16",
+                "openai/o4-mini-2025-04-16",
                 config=GenerateConfig(
                     temperature=1,
                     reasoning_effort="low",
