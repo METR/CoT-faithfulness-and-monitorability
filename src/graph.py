@@ -162,6 +162,7 @@ def plot_json_file(
     filtered_data: dict,
     output_dir: Path,
     hint_taking_threshold: float = 0.1,
+    show_color: bool = False,
 ) -> None:
     """
     Process a single JSON file and generate all graphs.
@@ -219,7 +220,7 @@ def plot_json_file(
         model=model,
         dataset=dataset_name,
         show_labels=SHOW_LABELS,
-        show_color=True,
+        show_color=show_color,
         show_shape=False,
         path=str(output_dir / f"propensity_thresh{hint_taking_threshold}.png"),
         show_dot_size=False,
@@ -257,6 +258,7 @@ def process_single_file(
     hint_taking_threshold: float = 0.1,
     base_results_dir: Path = None,
     output_base_dir: Path = None,
+    show_color: bool = False,
 ):
     """
     Process a single JSON file and generate all graphs.
@@ -288,7 +290,7 @@ def process_single_file(
     ), (
         f"filtered data faithfulness scores should be less than or equal to data faithfulness scores, {len(filtered_data['faithfulness_scores'])} is not <= {len(data['faithfulness_scores'])}"
     )
-    plot_json_file(data, filtered_data, output_dir, hint_taking_threshold)
+    plot_json_file(data, filtered_data, output_dir, hint_taking_threshold, show_color)
     print(f"\nCompleted! Processed 1 file.")
 
 
@@ -296,6 +298,7 @@ def process_all_files(
     base_results_dir: Path,
     output_base_dir: Path,
     hint_taking_threshold: float = 0.1,
+    show_color: bool = False,
 ):
     """
     Process all JSON files in the faithfulness and monitorability directories.
@@ -317,6 +320,7 @@ def process_all_files(
                 hint_taking_threshold,
                 base_results_dir,
                 output_base_dir,
+                show_color,
             )
             total_files += 1
     print(f"\nCompleted! Processed {total_files} JSON files total.")
@@ -331,7 +335,7 @@ def main():
     parser.add_argument(
         "--hint_taking_threshold",
         type=float,
-        default=0.1,
+        default=0.95,
         help="Threshold for hint taking (default: 0.1)",
     )
     parser.add_argument(
@@ -339,10 +343,16 @@ def main():
         type=str,
         help="Path to a specific JSON file to process (instead of processing all files)",
     )
+    parser.add_argument(
+        "--show_color",
+        type=bool,
+        default=False,
+        help="Show color in the graphs (default: False)",
+    )
     args = parser.parse_args()
 
     print(
-        f"Starting graph generation with hint taking threshold: {args.hint_taking_threshold}"
+        f"Starting graph generation with hint taking threshold: {args.hint_taking_threshold}, show color: {args.show_color}"
     )
 
     # Base directories - use current file's directory as anchor
@@ -357,9 +367,15 @@ def main():
             args.hint_taking_threshold,
             base_results_dir,
             output_base_dir,
+            args.show_color,
         )
     else:
-        process_all_files(base_results_dir, output_base_dir, args.hint_taking_threshold)
+        process_all_files(
+            base_results_dir,
+            output_base_dir,
+            args.hint_taking_threshold,
+            args.show_color,
+        )
 
 
 if __name__ == "__main__":

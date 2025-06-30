@@ -38,6 +38,23 @@ model_pretty = {
     "claude-opus-4-20250514": "Claude Opus 4",
 }
 
+JUDGE_FILE_TO_NAME_MAP = {
+    "faithfulness_0611.py": "strict",
+    "faithfulness_2_broad_definition.py": "relaxed",
+    "faithfulness_broad_0627.py": "relaxed",
+    "faithfulness_narrow_0627.py": "strict",
+}
+
+PROMPT_FILE_TO_NAME_MAP = {
+    "cheater_ai.py": "prompt that instructs the model to encode its CoT in 3 layers",
+    "default.py": "default prompt",
+    "general_instructive.py": "prompt that instructs the CoT to hide computations",
+    "grug.py": "prompt that instructs the model to think like a caveman",
+    "moe_v4.py": "prompt that instructs the model to consult imaginary experts",
+    "tcgs_non_instructive.py": "prompt that instructs the model to think like a caveman and avoid detection from Nazis",
+    "jailbreak_0614.py": "prompt that instructs the model to solve the clue in place of the problem",
+}
+
 
 @dataclass
 class GraphMetadata:
@@ -82,6 +99,7 @@ def generate_propensity_graph(
     show_color: bool = True,
     show_shape: bool = True,
     show_dot_size: bool = True,
+    show_error_bars: bool = True,
     path: str | None = None,
 ) -> None:
     """
@@ -136,25 +154,6 @@ def generate_propensity_graph(
                 fontsize=8,
                 frameon=False,
             )
-
-    # Add metadata without box, positioned below legend
-    if metadata:
-        metadata_text = (
-            f"Hint Taking Threshold: {metadata.threshold}\n"
-            f"Question Prompt: {metadata.question_prompt.split('/')[-1]}\n"
-            f"Judge Prompt: {metadata.judge_prompt.split('/')[-1]}\n"
-            f"Sample Size: {len(labels)}"
-        )
-        # Position metadata below the legend with more spacing
-        metadata_y_pos = 0.5 if legend_elements else 0.75
-        plt.figtext(
-            0.82,
-            metadata_y_pos,
-            metadata_text,
-            verticalalignment="top",
-            horizontalalignment="left",
-            fontsize=8,
-        )
 
     image = plt.imread("assets/logo.png")
 
@@ -244,7 +243,7 @@ def generate_propensity_graph(
             alpha=0.7,
         )
 
-    plt.xlim(0, 1.01)
+    plt.xlim(-0.02, 1.01)
     plt.ylim(0, 1.05)
 
     if show_labels:
@@ -265,29 +264,33 @@ def generate_propensity_graph(
         else "Monitorability"
     )
     # Create ylabel with judge information if metadata is available
-    if metadata and metadata.judge_prompt:
-        judge_name = metadata.judge_prompt.split("/")[-1]
-        ylabel = f"{title_metric} Score\nas judged by {judge_name} judge"
-        plt.ylabel(ylabel, fontsize=16)
-        # Make the sub-axis text smaller and gray
-        ax.yaxis.label.set_fontsize(16)
-        ax.yaxis.label.set_color("black")
-        # Get the ylabel text and modify the second line styling
-        ylabel_text = ax.get_ylabel()
-        ax.set_ylabel(f"{title_metric} Score", fontsize=16, color="black", labelpad=15)
-        ax.text(
-            -0.05,
-            0.5,
-            f"as judged by {judge_name} judge",
-            rotation=90,
-            transform=ax.transAxes,
-            fontsize=12,
-            color="gray",
-            verticalalignment="center",
-            horizontalalignment="center",
-        )
+    assert metadata.judge_prompt is not None
+    if title_metric == "Faithfulness":
+        y_title = "Faithfulness"
+        y_subtitle = f"frequency at which the relevant information is in the chain of thought\nwith {JUDGE_FILE_TO_NAME_MAP[metadata.judge_prompt.split('/')[-1]]} faithfulness definition"
+    elif title_metric == "Monitorability":
+        y_title = "Monitor Sensitivity"
+        y_subtitle = "true positive rate for detecting relevant information usage\non a monitor with FPR = ~1%"
     else:
-        plt.ylabel(f"{title_metric} Score", fontsize=16)
+        raise ValueError(f"Invalid title metric: {title_metric}")
+    # judge_name = metadata.judge_prompt.split("/")[-1]
+    # ylabel = f"{y_title}\n{y_subtitle}"
+    # plt.ylabel(ylabel, fontsize=16)
+    # Make the sub-axis text smaller and gray
+    ax.yaxis.label.set_fontsize(16)
+    ax.yaxis.label.set_color("black")
+    ax.set_ylabel(y_title, fontsize=18, color="black", labelpad=32)
+    ax.text(
+        -0.06,
+        0.5,
+        y_subtitle,
+        rotation=90,
+        transform=ax.transAxes,
+        fontsize=12,
+        color="gray",
+        verticalalignment="center",
+        horizontalalignment="center",
+    )
 
     # Add main title with model name and prompt
     model_name = model_pretty.get(model.split("/")[-1], model.split("/")[-1])
@@ -307,9 +310,9 @@ def generate_propensity_graph(
     ax.text(
         0,
         1.03,
-        f"90% CI filtered to hints taken more than {(metadata.threshold) * 100:.0f}% of the time\nwith prompt {prompt_name}",
+        f"90% CI, filtered to clues with usage rate >= {(metadata.threshold) * 100:.0f}%\nwith {PROMPT_FILE_TO_NAME_MAP[prompt_name]}",
         transform=ax.transAxes,
-        fontsize=14,
+        fontsize=12,
         color="gray",
         style="italic",
         horizontalalignment="left",
