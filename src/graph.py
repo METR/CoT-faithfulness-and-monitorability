@@ -161,6 +161,7 @@ def plot_json_file(
     data: dict,
     filtered_data: dict,
     output_dir: Path,
+    json_file_path: Path,
     hint_taking_threshold: float = 0.1,
     show_color: bool = False,
 ) -> None:
@@ -207,48 +208,55 @@ def plot_json_file(
     if len(filtered_data.keys()) == 0:
         raise Exception(f"No data remaining after filtering for {json_file_path}")
 
-    # Generate propensity graph
-    generate_propensity_graph(
-        filtered_data["faithfulness_scores"],
-        filtered_data["faithfulness_stderrs"],
-        filtered_data["difficulty_scores"],
-        filtered_data["difficulty_stderrs"],
-        metadata,
-        labels=filtered_data["labels"],
-        take_hints_scores=filtered_data["take_hints_scores"],
-        samples=filtered_data["samples"],
-        model=model,
-        dataset=dataset_name,
-        show_labels=SHOW_LABELS,
-        show_color=show_color,
-        show_shape=False,
-        path=str(output_dir / f"propensity_thresh{hint_taking_threshold}.png"),
-        show_dot_size=False,
-    )
+    if len(filtered_data["faithfulness_scores"]) == 0:
+        print(
+            f"Warning: No data remaining after filtering for {json_file_path}. Skipping {str(output_dir / f'propensity_thresh{hint_taking_threshold}.png')}, {str(output_dir / f'boxplot_thresh{hint_taking_threshold}.png')}, {str(output_dir / f'violin_plot_thresh{hint_taking_threshold}.png')}"
+        )
+        return
 
-    # Generate boxplot
-    generate_boxplot(
-        filtered_data["faithfulness_scores"],
-        filtered_data["difficulty_scores"],
-        metadata,
-        BOXPLOT_LOWER_THRESHOLD,
-        BOXPLOT_UPPER_THRESHOLD,
-        model,
-        dataset_name,
-        path=str(output_dir / f"boxplot_thresh{hint_taking_threshold}.png"),
-    )
+    else:
+        # Generate propensity graph
+        generate_propensity_graph(
+            filtered_data["faithfulness_scores"],
+            filtered_data["faithfulness_stderrs"],
+            filtered_data["difficulty_scores"],
+            filtered_data["difficulty_stderrs"],
+            metadata,
+            labels=filtered_data["labels"],
+            take_hints_scores=filtered_data["take_hints_scores"],
+            samples=filtered_data["samples"],
+            model=model,
+            dataset=dataset_name,
+            show_labels=SHOW_LABELS,
+            show_color=show_color,
+            show_shape=False,
+            path=str(output_dir / f"propensity_thresh{hint_taking_threshold}.png"),
+            show_dot_size=False,
+        )
 
-    # Generate violin plot
-    generate_violin_plot(
-        filtered_data["faithfulness_scores"],
-        filtered_data["difficulty_scores"],
-        BOXPLOT_LOWER_THRESHOLD,
-        BOXPLOT_UPPER_THRESHOLD,
-        metadata,
-        model,
-        dataset_name,
-        path=str(output_dir / f"violin_plot_thresh{hint_taking_threshold}.png"),
-    )
+        # Generate boxplot
+        generate_boxplot(
+            filtered_data["faithfulness_scores"],
+            filtered_data["difficulty_scores"],
+            metadata,
+            BOXPLOT_LOWER_THRESHOLD,
+            BOXPLOT_UPPER_THRESHOLD,
+            model,
+            dataset_name,
+            path=str(output_dir / f"boxplot_thresh{hint_taking_threshold}.png"),
+        )
+
+        # Generate violin plot
+        generate_violin_plot(
+            filtered_data["faithfulness_scores"],
+            filtered_data["difficulty_scores"],
+            BOXPLOT_LOWER_THRESHOLD,
+            BOXPLOT_UPPER_THRESHOLD,
+            metadata,
+            model,
+            dataset_name,
+            path=str(output_dir / f"violin_plot_thresh{hint_taking_threshold}.png"),
+        )
 
     print(f"Graphs are saved in {output_dir}")
 
@@ -290,7 +298,14 @@ def process_single_file(
     ), (
         f"filtered data faithfulness scores should be less than or equal to data faithfulness scores, {len(filtered_data['faithfulness_scores'])} is not <= {len(data['faithfulness_scores'])}"
     )
-    plot_json_file(data, filtered_data, output_dir, hint_taking_threshold, show_color)
+    plot_json_file(
+        data,
+        filtered_data,
+        output_dir,
+        json_file_path,
+        hint_taking_threshold,
+        show_color,
+    )
     print(f"\nCompleted! Processed 1 file.")
 
 
