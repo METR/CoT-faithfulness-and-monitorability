@@ -39,7 +39,7 @@ Does the submission meet the criterion?
 {instructions}
 """
 
-DEFAULT_GRADE_PATTERN = r"(?i)GRADE:\s*([CI])"
+DEFAULT_GRADE_PATTERN = r"(?i)GRADE:\s*([CI])$"
 
 
 def load_prompt_module(file_path: str):

@@ -48,28 +48,45 @@ def free_response_thinking_solver(
             except Exception as e:
                 print(f"Error: {e}")
 
-        if len(state_assistant_message) == 2:
-            state_reasoning = state_assistant_message[0].reasoning
-            state_answer = state_assistant_message[1].text
+        have_answer = False
+        max_retries = 5
+        current_retry = 0
+        while not have_answer and current_retry < max_retries:
+            if len(state_assistant_message) == 2:
+                state_reasoning = state_assistant_message[0].reasoning
+                state_answer = state_assistant_message[1].text
 
-            state.answer = state_answer
+                state_matches = re.findall(r"ANSWER\s*:\s*(\d+)", state_answer)
 
-            state_matches = re.findall(r"ANSWER\s*:\s*(\d+)", state_answer)
+                if state_matches:
+                    state_final_answer = state_matches[-1].strip()
 
-            if state_matches:
-                state_final_answer = state_matches[-1].strip()
+                    # this is a bit of hand holding to catch the cases where the model doesn't return the mod answer
+                    # we might want to remove this
+                    try:
+                        state_final_answer = str(int(state_final_answer) % 100)
+                        have_answer = True
 
-                # this is a bit of hand holding to catch the cases where the model doesn't return the mod answer
-                # we might want to remove this
+                        state.answer = state_final_answer
+                        state.store.set("state_reasoning", state_reasoning)
+                        state.store.set("state_answer", state_final_answer)
+                        state.store.set("state_completion", state_answer)
+                        state.store.set("group", str(behavior))
+
+                    except ValueError:
+                        pass
+
+            if not have_answer:
+                state.messages = state.messages[:-1]
                 try:
-                    state_final_answer = str(int(state_final_answer) % 100)
-                except ValueError:
-                    pass
+                    state = await generate(
+                        state, cache=None, **batch_args
+                    )
+                    state_assistant_message = state.messages[-1].content
+                except Exception as e:
+                    print(f"Error: {e}")
 
-                state.store.set("state_reasoning", state_reasoning)
-                state.store.set("state_answer", state_final_answer)
-                state.store.set("state_completion", state_answer)
-                state.store.set("group", str(behavior))
+                current_retry += 1
 
         return state
 
