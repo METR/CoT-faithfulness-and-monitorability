@@ -13,7 +13,7 @@ from inspect_ai.solver import generate
 from inspect_ai.util import DisplayType
 
 from utils.batch import get_batch_args
-from utils.question_prompts.default import DEFAULT_QUESTION_PREFIX
+from utils.question_prompts.default_positive_int import DEFAULT_QUESTION_PREFIX
 
 
 @task
@@ -68,7 +68,8 @@ def get_problem_difficulty(
     problem_accuracies: Dict[str, List[float]] = {}
     dataset = dataset[:limit]
     for sample in dataset:
-        sample.target = str(int(sample.target) % 100)
+        sample.target = str(int(sample.target))
+
 
     if filtered_csv:
         accuracy_df = pd.read_csv(filtered_csv)
@@ -92,7 +93,7 @@ def get_problem_difficulty(
             model=reasoning_model,
             display=display,
             max_connections=max_connections,
-            log_dir=path.join(log_dir, "reasoning") if log_dir else None,
+            log_dir=os.path.join(log_dir, "reasoning") if log_dir else None,
         )
 
         samples = evalscore[0].samples

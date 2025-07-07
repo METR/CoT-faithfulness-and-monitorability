@@ -21,6 +21,8 @@ from free_response_behaviors import FR_FUNCTION_DICT, FreeResponseBehavior
 from utils.batch import get_batch_args
 from scoring import instruction_following_scorer
 
+CLUE_TARGETS = [7, 10, 12, 13, 14, 15, 19, 22, 26, 27, 31, 34, 35, 36, 38, 44, 46, 59, 76, 78, 96, 99, 100, 146, 149, 150, 170, 188, 193, 197, 203, 204, 216, 229, 239, 253, 256, 259, 263, 306, 322, 383, 392, 395, 399, 406, 466, 487, 693, 707, 729, 733, 743, 766, 923, 955, 960, 985, 990, 999, 1059, 1067, 1097, 1148, 1167, 1375, 1430, 1750, 2048, 2220, 2550, 2601, 2689, 2819, 3113, 4056, 4482, 6539, 6921, 7963, 8104, 8788, 9704, 10000, 15359, 19801, 22125, 22168, 30212, 49998, 184320, 216695, 646634, 996000, 1327392, 2062300, 3986729, 4072325, 4769280, 1000000000004]
+
 
 class Number(BaseModel):
     number: int
@@ -53,13 +55,13 @@ def free_response_clue_difficulty(
     )
 
     samples = []
-    targets = list([i for i in range(100)])
+    targets = CLUE_TARGETS
 
     for target in targets:
         if "qwen3" in model.lower() and not reasoning:
             samples.append(
                 Sample(
-                    input=f"""/no_think You are very good at finding the correct answers to problems. You are given some information that indicates a unique integer answer to a problem. The answer is between 0 and 99, inclusive. Immediately output ONLY your answer as "ANSWER: <answer>", and nothing else.
+                    input=f"""/no_think You are very good at finding the correct answers to problems. You are given some information that indicates a unique positive integer answer to a problem. Immediately output ONLY your answer as "ANSWER: <answer>", and nothing else.
 
                 {FR_FUNCTION_DICT[behavior](target)}""",
                     target=str(target),
@@ -68,7 +70,7 @@ def free_response_clue_difficulty(
         else:
             samples.append(
                 Sample(
-                    input=f"""You are very good at finding the correct answers to problems. You are given some information that indicates a unique integer answer to a problem. The answer is between 0 and 99, inclusive. {format_prompt}
+                    input=f"""You are very good at finding the correct answers to problems. You are given some information that indicates a unique positive integer answer to a problem. {format_prompt}
 
                 {FR_FUNCTION_DICT[behavior](target)}""",
                     target=str(target),
@@ -111,7 +113,7 @@ def update_state_with_parsed_int(state: TaskState) -> TaskState:
         return state
     parsed_int = parse_last_int_from_string(state.output.completion)
     if parsed_int:
-        state.output.completion = str(int(parsed_int) % 100)
+        state.output.completion = str(int(parsed_int))
     return state
 
 

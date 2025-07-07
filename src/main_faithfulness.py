@@ -20,7 +20,7 @@ from utils.file_utils import (
 from utils.models import get_model_short_name
 from utils.parsing import parse_args
 from utils.prompt_utils import load_prompt_module
-from utils.question_prompts.default import DEFAULT_QUESTION_PREFIX
+from utils.question_prompts.default_positive_int import DEFAULT_QUESTION_PREFIX
 
 load_dotenv()
 project_root = pathlib.Path(__file__).resolve().parent
