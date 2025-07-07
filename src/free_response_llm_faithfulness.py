@@ -60,21 +60,14 @@ def free_response_thinking_solver(
 
                 if state_matches:
                     state_final_answer = state_matches[-1].strip()
+                    state_final_answer = str(int(state_final_answer))
+                    have_answer = True
 
-                    # this is a bit of hand holding to catch the cases where the model doesn't return the mod answer
-                    # we might want to remove this
-                    try:
-                        state_final_answer = str(int(state_final_answer) % 100)
-                        have_answer = True
-
-                        state.answer = state_final_answer
-                        state.store.set("state_reasoning", state_reasoning)
-                        state.store.set("state_answer", state_final_answer)
-                        state.store.set("state_completion", state_answer)
-                        state.store.set("group", str(behavior))
-
-                    except ValueError:
-                        pass
+                    state.answer = state_final_answer
+                    state.store.set("state_reasoning", state_reasoning)
+                    state.store.set("state_answer", state_final_answer)
+                    state.store.set("state_completion", state_answer)
+                    state.store.set("group", str(behavior))
 
             if not have_answer:
                 state.messages = state.messages[:-1]
