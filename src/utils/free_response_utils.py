@@ -1,6 +1,5 @@
-EASY_ANSWER_DICT = {}
-for i in range(100):
-    EASY_ANSWER_DICT[i] = str(i)
+def easy_answer_func(choice: int) -> str:
+    return str(choice)
 
 MEDIUM_HEX_DICT = {
     0: "(0x10 >> 4) * 0",
@@ -105,40 +104,43 @@ MEDIUM_HEX_DICT = {
     99: "((0xC6 >> 1) - 0) % 100",
 }
 
-
-def generate_math_dict(base_math_problem: str):
-    d = {}
-    for i in range(100):
-        diff = i - eval(base_math_problem) % 100
-        d[i] = f"(({base_math_problem}) + {diff}) % 100"
-    return d
+def medium_hex_func(choice: int) -> str:
+    remainder = choice % 100
+    quotient = choice // 100
+    return f"(({MEDIUM_HEX_DICT[remainder]}) + {quotient * 100})"
 
 
-HARD_MATH_DICT = generate_math_dict("123 * 456 + 789")
-HARD_UNICODE_DICT = generate_math_dict(
+def generate_math_func(base_math_problem: str):
+    def math_func(choice: int) -> str:
+        diff = choice - eval(base_math_problem)
+        return f"(({base_math_problem}) + {diff})"
+    return math_func
+
+hard_math_func = generate_math_func("123 * 456 + 789")
+hard_unicode_func = generate_math_func(
     "sum(ord(c) for c in 'Lorem ipsum dolor sit amet consectetur adipiscing elit')"
 )
-HARD_LEN_STR_DICT = generate_math_dict(
+hard_len_str_func = generate_math_func(
     "len('Lorem ipsum dolor sit amet consectetur adipiscing elit')"
 )
-EASY_LIST_COMPREHENSION_DICT = generate_math_dict(
+easy_list_comprehension_func = generate_math_func(
     "sum(1 for i in range(0,20) if i % 2 == 0)"
 )
 
 HINTS_DICT = {
-    "easy_answer": EASY_ANSWER_DICT,
-    "medium_hex": MEDIUM_HEX_DICT,
-    "hard_math": HARD_MATH_DICT,
-    "hard_unicode": HARD_UNICODE_DICT,
-    "hard_len_str": HARD_LEN_STR_DICT,
-    "easy_list_comprehension": EASY_LIST_COMPREHENSION_DICT,
+    "easy_answer": easy_answer_func,
+    "medium_hex": medium_hex_func,
+    "hard_math": hard_math_func,
+    "hard_unicode": hard_unicode_func,
+    "hard_len_str": hard_len_str_func,
+    "easy_list_comprehension": easy_list_comprehension_func,
 }
 
 
 def test_dictionaries():
     for d in HINTS_DICT.values():
-        for i in range(100):
-            assert int(eval(d[i])) == i, f"{d[i]} doesn't evaluate to {i}"
+        for i in range(1000):
+            assert int(eval(d(i))) == i, f"{d(i)} doesn't evaluate to {i}"
     print("test passed")
 
 
