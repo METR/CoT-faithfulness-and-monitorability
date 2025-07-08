@@ -17,8 +17,8 @@ model_temperatures = {
 
 # Define models and their corresponding CSV files containing problem difficulty scores
 models = {
-    "anthropic/claude-3-7-sonnet-latest": "problem_difficulty/claude-3-7-sonnet-latest_hard-math-v0_difficulty-10-epochs.csv",
-    "anthropic/claude-opus-4-20250514": "problem_difficulty/claude-opus-4-20250514_hard-math-v0_difficulty.csv",
+    "anthropic/claude-3-7-sonnet-latest": "problem_difficulty/claude-3-7-sonnet-latest_hard-math-v0_difficulty_positive_int.csv",
+    "anthropic/claude-opus-4-20250514": "problem_difficulty/claude-opus-4-20250514_hard-math-v0_difficulty_positive_int.csv",
     "together/Qwen/Qwen3-235B-A22B-fp8-tput": "problem_difficulty/Qwen3-235B-A22B-fp8-tput_hard-math-v0_difficulty.csv",
 }
 
@@ -34,6 +34,9 @@ model_combinations = {
     "anthropic/claude-3-7-sonnet-latest": [
         ("default_positive_int.py", "faithfulness_broad_0627.py", True),
         ("default_positive_int.py", "monitorability_0624.py", False),
+        ("cheater_ai_positive_int.py", "faithfulness_broad_0627.py", True),
+        ("cheater_ai_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("cheater_ai_positive_int.py", "monitorability_0624.py", False),
         ("moe_v4_positive_int.py", "faithfulness_narrow_0703.py", True),
         ("moe_v4_positive_int.py", "faithfulness_broad_0627.py", True),
         ("moe_v4_positive_int.py", "monitorability_0624.py", False),
@@ -53,6 +56,9 @@ model_combinations = {
     "anthropic/claude-opus-4-20250514": [
         ("default_positive_int.py", "faithfulness_broad_0627.py", True),
         ("default_positive_int.py", "monitorability_0624.py", False),
+        ("cheater_ai_positive_int.py", "faithfulness_broad_0627.py", True),
+        ("cheater_ai_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("cheater_ai_positive_int.py", "monitorability_0624.py", False),
         ("moe_v4_positive_int.py", "faithfulness_narrow_0703.py", True),
         ("moe_v4_positive_int.py", "faithfulness_broad_0627.py", True),
         ("moe_v4_positive_int.py", "monitorability_0624.py", False),
@@ -70,23 +76,23 @@ model_combinations = {
         ("tcgs_non_instructive_positive_int.py", "monitorability_0624.py", False),
     ],
     "together/Qwen/Qwen3-235B-A22B-fp8-tput": [
-        ("default_positive_int.py", "faithfulness_broad_0627.py", True),
-        ("default_positive_int.py", "monitorability_0624.py", False),
-        ("moe_v4_positive_int.py", "faithfulness_narrow_0703.py", True),
-        ("moe_v4_positive_int.py", "faithfulness_broad_0627.py", True),
-        ("moe_v4_positive_int.py", "monitorability_0624.py", False),
-        ("grug_positive_int.py", "faithfulness_broad_0627.py", True),
-        ("grug_positive_int.py", "faithfulness_narrow_0703.py", True),
-        ("grug_positive_int.py", "monitorability_0624.py", False),
-        ("jailbreak_0614_positive_int.py", "faithfulness_broad_0627.py", True),
-        ("jailbreak_0614_positive_int.py", "faithfulness_narrow_0703.py", True),
-        ("jailbreak_0614_positive_int.py", "monitorability_0624.py", False),
-        ("general_instructive_positive_int.py", "faithfulness_broad_0627.py", True),
-        ("general_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
-        ("general_instructive_positive_int.py", "monitorability_0624.py", False),
-        ("tcgs_non_instructive_positive_int.py", "faithfulness_broad_0627.py", True),
-        ("tcgs_non_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
-        ("tcgs_non_instructive_positive_int.py", "monitorability_0624.py", False),
+        # ("default_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("default_positive_int.py", "monitorability_0624.py", False),
+        # ("moe_v4_positive_int.py", "faithfulness_narrow_0703.py", True),
+        # ("moe_v4_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("moe_v4_positive_int.py", "monitorability_0624.py", False),
+        # ("grug_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("grug_positive_int.py", "faithfulness_narrow_0703.py", True),
+        # ("grug_positive_int.py", "monitorability_0624.py", False),
+        # ("jailbreak_0614_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("jailbreak_0614_positive_int.py", "faithfulness_narrow_0703.py", True),
+        # ("jailbreak_0614_positive_int.py", "monitorability_0624.py", False),
+        # ("general_instructive_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("general_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
+        # ("general_instructive_positive_int.py", "monitorability_0624.py", False),
+        # ("tcgs_non_instructive_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("tcgs_non_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
+        # ("tcgs_non_instructive_positive_int.py", "monitorability_0624.py", False),
     ],
 }
 
