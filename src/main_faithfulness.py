@@ -47,7 +47,9 @@ if __name__ == "__main__":
 
     # load and filter for behaviors with reasoning accuracy > 0.95
     all_behaviors = list(FR_FUNCTION_DICT.keys())
-    clue_difficulty_dir = f"{project_root}/results/clue_difficulty/{model_short_name}"  # use clue_difficulty-positive-int
+    clue_difficulty_dir = (
+        f"{project_root}/results/clue_difficulty-positive-int/{model_short_name}"
+    )
     print(f"clue_difficulty_dir: {clue_difficulty_dir}")
     clue_difficulty_json_files = glob.glob(f"{clue_difficulty_dir}/*.json")
     clue_difficulty_data: Optional[dict[str, Any]] = get_latest_json_file(
