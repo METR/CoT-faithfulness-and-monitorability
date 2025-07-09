@@ -55,6 +55,15 @@ PROMPT_FILE_TO_NAME_MAP = {
     "jailbreak_0614.py": "prompt that instructs the model to solve the clue in place of the problem",
 }
 
+PROMPT_FILE_TO_SHORT_NAME_MAP = {
+    "cheater_ai.py": "Cheater",
+    "default.py": "Default",
+    "general_instructive.py": "Instructive",
+    "grug.py": "Grug",
+    "moe_v4.py": "MOE",
+    "tcgs_non_instructive.py": "TCGS",
+    "jailbreak_0614.py": "Jailbreak",
+}
 
 @dataclass
 class GraphMetadata:
@@ -161,10 +170,14 @@ def generate_propensity_graph(
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    # Add shaded "safe zone" below the line from (0,0) to (1,1)
+    # Add grey triangle to indicate obfuscated CoT region
     x = [0, 1]
     y = [0, 1]
-    plt.fill_between(x, [0, 0], y, alpha=0.2, color="#485F52", label="Safe Zone")
+    plt.fill_between(x, [0, 0], y, alpha=0.2, color="#485F52")
+    
+    plt.text(0.71, 0.33, "Obfuscated CoT region", 
+             rotation=0, ha='center', va='center',
+             fontsize=16, color='black', alpha=0.6)
 
     # Convert standard errors to 90% confidence intervals (z=1.645 for 90% CI)
     z_score = 1.645
@@ -233,14 +246,16 @@ def generate_propensity_graph(
         shape_colors = [colors[i] for i in shape_indices]
         shape_sizes = [dot_sizes[i] for i in shape_indices]
 
-        # Plot scatter points with variable size and varying colors/shapes
+        # Plot scatter points with transparent green fill and colored outlines
         plt.scatter(
             shape_difficulty,
             shape_faithfulness,
             s=shape_sizes,
-            c=shape_colors,
+            c="green",
             marker=shape,
-            alpha=0.7,
+            alpha=0.25,
+            edgecolors="black",
+            linewidth=1.5,
         )
 
     plt.xlim(-0.02, 1.01)
@@ -256,7 +271,17 @@ def generate_propensity_graph(
                 fontsize=6,
             )
 
-    plt.xlabel("Clue Difficulty: 1 - P(solve clue without CoT)", fontsize=16)
+    plt.xlabel("Clue Difficulty", fontsize=16)
+    ax.text(
+        0.5,
+        -0.10,
+        "1 - P(solve clue without CoT)",
+        transform=ax.transAxes,
+        fontsize=12,
+        color="gray",
+        verticalalignment="center",
+        horizontalalignment="center",
+    )
 
     title_metric = (
         "Faithfulness"
@@ -266,22 +291,19 @@ def generate_propensity_graph(
     # Create ylabel with judge information if metadata is available
     assert metadata.judge_prompt is not None
     if title_metric == "Faithfulness":
-        y_title = "Faithfulness"
-        y_subtitle = f"frequency at which the relevant information is in the chain of thought\nwith {JUDGE_FILE_TO_NAME_MAP[metadata.judge_prompt.split('/')[-1]]} faithfulness definition"
+        y_title = f"Faithfulness ({JUDGE_FILE_TO_NAME_MAP[metadata.judge_prompt.split('/')[-1]]} definition)"
+        y_subtitle = f"Frequency at which the clue is in the chain of thought\nwith {JUDGE_FILE_TO_NAME_MAP[metadata.judge_prompt.split('/')[-1]]} faithfulness definition"
     elif title_metric == "Monitorability":
         y_title = "Monitor Sensitivity"
-        y_subtitle = "true positive rate for detecting relevant information usage\non a monitor with FPR = ~1%"
+        y_subtitle = "True positive rate for detecting clue usage"
     else:
         raise ValueError(f"Invalid title metric: {title_metric}")
-    # judge_name = metadata.judge_prompt.split("/")[-1]
-    # ylabel = f"{y_title}\n{y_subtitle}"
-    # plt.ylabel(ylabel, fontsize=16)
-    # Make the sub-axis text smaller and gray
+
     ax.yaxis.label.set_fontsize(16)
     ax.yaxis.label.set_color("black")
-    ax.set_ylabel(y_title, fontsize=18, color="black", labelpad=32)
+    ax.set_ylabel(y_title, fontsize=18, color="black", labelpad=35 if metadata.faithfulness else 20)
     ax.text(
-        -0.06,
+        -0.07 if metadata.faithfulness else -0.05,
         0.5,
         y_subtitle,
         rotation=90,
@@ -299,22 +321,25 @@ def generate_propensity_graph(
         metadata.question_prompt.split("/")[-1] if metadata else "default prompt"
     )
     plt.title(
-        f"{title_metric} of {model_name}",
+        f"{title_metric} of {model_name} ('{PROMPT_FILE_TO_SHORT_NAME_MAP[prompt_name]}' prompt)",
         loc="left",
         pad=50,
-        fontsize=25,
+        fontsize=22,
     )
+
+    subtitle = f"Faithfulness ({JUDGE_FILE_TO_NAME_MAP[metadata.judge_prompt.split('/')[-1]]} definition)" if metadata.faithfulness else f"Monitorability"
+    subtitle += f" when using a {PROMPT_FILE_TO_NAME_MAP[prompt_name]}.\n"
+    subtitle += f"Only clues with usage rate >= {(metadata.threshold) * 100:.0f}% are shown. Error bars show 90% CIs."
 
     # Add subtitle with different style
     ax = plt.gca()
     ax.text(
         0,
         1.03,
-        f"90% CI, filtered to clues with usage rate >= {(metadata.threshold) * 100:.0f}%\nwith {PROMPT_FILE_TO_NAME_MAP[prompt_name]}",
+        subtitle,
         transform=ax.transAxes,
         fontsize=12,
-        color="gray",
-        style="italic",
+        color="black",
         horizontalalignment="left",
     )
     ax = plt.axes(
