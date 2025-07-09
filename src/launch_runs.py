@@ -6,8 +6,8 @@ import time
 from datetime import datetime
 
 # Base configuration
-BATCH_SIZE = 0
-MAX_CONNECTIONS = 60
+BATCH_SIZE = 2000
+MAX_CONNECTIONS = 2000
 
 # Define temperatures for each model
 model_temperatures = {
@@ -34,10 +34,10 @@ model_short_names = {
 model_combinations = {
     "anthropic/claude-3-7-sonnet-latest": [
         # ("default_positive_int.py", "faithfulness_broad_0627.py", True),
-        ("default_positive_int.py", "faithfulness_narrow_0703.py", True),
+        # ("default_positive_int.py", "faithfulness_narrow_0703.py", True),
         # ("default_positive_int.py", "monitorability_0624.py", False),
         # ("cheater_ai_positive_int.py", "faithfulness_broad_0627.py", True),
-        ("cheater_ai_positive_int.py", "faithfulness_narrow_0703.py", True),
+        # ("cheater_ai_positive_int.py", "faithfulness_narrow_0703.py", True),
         # ("cheater_ai_positive_int.py", "monitorability_0624.py", False),
         # ("moe_v4_positive_int.py", "faithfulness_narrow_0703.py", True),
         # ("moe_v4_positive_int.py", "faithfulness_broad_0627.py", True),
@@ -56,7 +56,7 @@ model_combinations = {
         # ("tcgs_non_instructive_positive_int.py", "monitorability_0624.py", False),
     ],
     "anthropic/claude-opus-4-20250514": [
-        ("default_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("default_positive_int.py", "faithfulness_broad_0627.py", True),
         # ("default_positive_int.py", "monitorability_0624.py", False),
         # ("cheater_ai_positive_int.py", "faithfulness_broad_0627.py", True),
         # ("cheater_ai_positive_int.py", "faithfulness_narrow_0703.py", True),
@@ -80,30 +80,33 @@ model_combinations = {
     "together/Qwen/Qwen3-235B-A22B-fp8-tput": [
         # ("default_positive_int.py", "faithfulness_broad_0627.py", True),
         # ("default_positive_int.py", "monitorability_0624.py", False),
-        # ("cheater_ai_positive_int.py", "faithfulness_broad_0627.py", True),
-        # ("cheater_ai_positive_int.py", "faithfulness_narrow_0703.py", True),
-        # ("cheater_ai_positive_int.py", "monitorability_0624.py", False),
-        # ("moe_v4_positive_int.py", "faithfulness_narrow_0703.py", True),
-        # ("moe_v4_positive_int.py", "faithfulness_broad_0627.py", True),
+        ("cheater_ai_positive_int.py", "faithfulness_broad_0627.py", True),
+        ("cheater_ai_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("cheater_ai_positive_int.py", "monitorability_0624.py", False),
+        ("moe_v4_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("moe_v4_positive_int.py", "faithfulness_broad_0627.py", True),
         ("moe_v4_positive_int.py", "monitorability_0624.py", False),
-        # ("grug_positive_int.py", "faithfulness_broad_0627.py", True),
-        # ("grug_positive_int.py", "faithfulness_narrow_0703.py", True),
-        # ("grug_positive_int.py", "monitorability_0624.py", False),
-        # ("jailbreak_0614_positive_int.py", "faithfulness_broad_0627.py", True),
-        # ("jailbreak_0614_positive_int.py", "faithfulness_narrow_0703.py", True),
-        # ("jailbreak_0614_positive_int.py", "monitorability_0624.py", False),
+        ("grug_positive_int.py", "faithfulness_broad_0627.py", True),
+        ("grug_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("grug_positive_int.py", "monitorability_0624.py", False),
+        ("jailbreak_0614_positive_int.py", "faithfulness_broad_0627.py", True),
+        ("jailbreak_0614_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("jailbreak_0614_positive_int.py", "monitorability_0624.py", False),
         ("general_instructive_positive_int.py", "faithfulness_broad_0627.py", True),
-        # ("general_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("general_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
         ("general_instructive_positive_int.py", "monitorability_0624.py", False),
-        # ("tcgs_non_instructive_positive_int.py", "faithfulness_broad_0627.py", True),
-        # ("tcgs_non_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
-        # ("tcgs_non_instructive_positive_int.py", "monitorability_0624.py", False),
+        ("tcgs_non_instructive_positive_int.py", "faithfulness_broad_0627.py", True),
+        ("tcgs_non_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("tcgs_non_instructive_positive_int.py", "monitorability_0624.py", False),
     ],
 }
 
 
 def launch_screen_session(session_name: str, command: str) -> bool:
     """Launch a command in a screen session."""
+    if len(session_name) > 80:
+        session_name = session_name[:80]
+
     screen_cmd = [
         "screen",
         "-dmS",
