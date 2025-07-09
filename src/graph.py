@@ -6,6 +6,7 @@ from typing import Any, List, Tuple
 from graph_utils import (
     GraphMetadata,
     generate_boxplot,
+    generate_difficulty_distribution_graph,
     generate_propensity_graph,
     generate_taking_hints_graph,
     generate_taking_hints_v_difficulty_graph,
@@ -256,6 +257,15 @@ def plot_json_file(
             model,
             dataset_name,
             path=str(output_dir / f"violin_plot_thresh{hint_taking_threshold}.png"),
+        )
+
+        # Generate difficulty distribution graph
+        generate_difficulty_distribution_graph(
+            filtered_data["difficulty_scores"],
+            metadata,
+            model,
+            dataset_name,
+            path=str(output_dir / f"difficulty_distribution_thresh{hint_taking_threshold}.png"),
         )
 
     print(f"Graphs are saved in {output_dir}")
