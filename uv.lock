@@ -718,8 +718,8 @@ wheels = [
 
 [[package]]
 name = "inspect-ai"
-version = "0.3.113.dev29+g819916d8"
-source = { git = "https://github.com/METR/inspect_ai?rev=feature%2Ftogether-batch#819916d88e366454d036d75a3c0553ff765e25e1" }
+version = "0.3.113.dev40+g154ce47a"
+source = { git = "https://github.com/METR/inspect_ai?rev=feature%2Ftogether-batch#154ce47aa8f55bb87e0fac69f134d99fbcb8db03" }
 dependencies = [
     { name = "aiohttp" },
     { name = "anyio" },
