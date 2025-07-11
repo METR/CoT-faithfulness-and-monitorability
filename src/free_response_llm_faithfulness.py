@@ -72,9 +72,7 @@ def free_response_thinking_solver(
             if not have_answer:
                 state.messages = state.messages[:-1]
                 try:
-                    state = await generate(
-                        state, cache=None, **batch_args
-                    )
+                    state = await generate(state, cache=False, **batch_args)
                     state_assistant_message = state.messages[-1].content
                 except Exception as e:
                     print(f"Error: {e}")

@@ -27,3 +27,4 @@ if __name__ == "__main__":
     unique_targets = list(set(targets))
     random_100_targets = random.sample(unique_targets, 100)
     print(sorted(random_100_targets))
+    print(sorted(unique_targets))
