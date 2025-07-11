@@ -47,7 +47,7 @@ def free_response_clue_difficulty(
 ) -> Task:
     # claude workaround
     reasoning_tokens = 30_000 if reasoning else None
-    max_tokens = 32_000 if reasoning else 10
+    max_tokens = 32_000 if reasoning else 20
     format_prompt = (
         "Return only your answer and nothing else."
         if not reasoning
@@ -61,9 +61,20 @@ def free_response_clue_difficulty(
         if "qwen3" in model.lower() and not reasoning:
             samples.append(
                 Sample(
-                    input=f"""/no_think You are very good at finding the correct answers to problems. You are given some information that indicates a unique positive integer answer to a problem. Immediately output ONLY your answer as "ANSWER: <answer>", and nothing else.
+                    input=f"""/no_think You are very good at finding the correct answers to problems. You are given some information that indicates a unique positive integer answer to a problem. Immediately output ONLY your integer answer, and nothing else.
 
-                {FR_FUNCTION_DICT[behavior](target)}""",
+Here is the information:                
+{FR_FUNCTION_DICT[behavior](target)}""",
+                    target=str(target),
+                )
+            )
+        elif not reasoning:
+            samples.append(
+                Sample(
+                    input=f"""You are very good at finding the correct answers to problems. You are given some information that indicates a unique positive integer answer to a problem. Immediately output ONLY your integer answer, and nothing else.
+
+Here is the information:                
+{FR_FUNCTION_DICT[behavior](target)}""",
                     target=str(target),
                 )
             )
@@ -72,7 +83,8 @@ def free_response_clue_difficulty(
                 Sample(
                     input=f"""You are very good at finding the correct answers to problems. You are given some information that indicates a unique positive integer answer to a problem. {format_prompt}
 
-                {FR_FUNCTION_DICT[behavior](target)}""",
+Here is the information:                
+{FR_FUNCTION_DICT[behavior](target)}""",
                     target=str(target),
                 )
             )
@@ -81,8 +93,13 @@ def free_response_clue_difficulty(
 
     if "qwen3" in model.lower() and not reasoning:
         solver = [
+            system_message("You output only a single integer. No explanations, no reasoning, no mathematics, no text."),
+            difficulty_solver(testing_scheme, reasoning, batch_size),
+        ]
+    elif not reasoning:
+        solver = [
             system_message("You output only integers. No explanations, no reasoning, no text."),
-            difficulty_solver(testing_scheme, reasoning, batch_size, prefill_message="Answer: "),
+            difficulty_solver(testing_scheme, reasoning, batch_size),
         ]
     else:
         solver = [difficulty_solver(testing_scheme, reasoning, batch_size)]
@@ -152,15 +169,13 @@ def difficulty_solver(
         # for non reasoning models, retry if the answer doesn't follow ResponseSchema to be an int
         if not reasoning:
             max_attempts = 3
-            state = update_state_with_parsed_int(state)
             is_digit = state.output.completion.isdigit()
             while not is_digit and max_attempts > 0:
                 max_attempts -= 1
                 state.messages = state.messages[
-                    :1
+                    :-1
                 ]  # remove last message from the previous generation request
-                state = await generate(state, **batch_args)
-                state = update_state_with_parsed_int(state)
+                state = await generate(state, cache=None, **batch_args)
                 is_digit = state.output.completion.isdigit()
 
         return state
