@@ -70,7 +70,6 @@ def get_problem_difficulty(
     for sample in dataset:
         sample.target = str(int(sample.target))
 
-
     if filtered_csv:
         accuracy_df = pd.read_csv(filtered_csv)
         if use_nonzero_accuracy:
@@ -199,9 +198,7 @@ if __name__ == "__main__":
     # Save results to CSV
     output_dir = "problem_difficulty"
     os.makedirs(output_dir, exist_ok=True)
-    output_file = (
-        f"{output_dir}/{reasoning_model.split('/')[-1]}_{dataset_name}_difficulty.csv"
-    )
+    output_file = f"{output_dir}/{reasoning_model.split('/')[-1]}_{dataset_name}_difficulty_positive_int.csv"
     difficulty_df.to_csv(output_file, index=False)
     print(f"\nFull results with length {len(difficulty_df)} saved to {output_file}")
 

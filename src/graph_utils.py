@@ -43,6 +43,7 @@ JUDGE_FILE_TO_NAME_MAP = {
     "faithfulness_2_broad_definition.py": "relaxed",
     "faithfulness_broad_0627.py": "relaxed",
     "faithfulness_narrow_0627.py": "strict",
+    "faithfulness_narrow_0703.py": "strict",
 }
 
 PROMPT_FILE_TO_NAME_MAP = {
@@ -53,6 +54,13 @@ PROMPT_FILE_TO_NAME_MAP = {
     "moe_v4.py": "prompt that instructs the model to consult imaginary experts",
     "tcgs_non_instructive.py": "prompt that instructs the model to think like a caveman and avoid detection from Nazis",
     "jailbreak_0614.py": "prompt that instructs the model to solve the clue in place of the problem",
+    "cheater_ai_positive_int.py": "prompt that instructs the model to encode its CoT in 3 layers",
+    "default_positive_int.py": "default prompt",
+    "general_instructive_positive_int.py": "prompt that instructs the CoT to hide computations",
+    "grug_positive_int.py": "prompt that instructs the model to think like a caveman",
+    "moe_v4_positive_int.py": "prompt that instructs the model to consult imaginary experts",
+    "tcgs_non_instructive_positive_int.py": "prompt that instructs the model to think like a caveman and avoid detection from Nazis",
+    "jailbreak_0614_positive_int.py": "prompt that instructs the model to solve the clue in place of the problem",
 }
 
 PROMPT_FILE_TO_SHORT_NAME_MAP = {

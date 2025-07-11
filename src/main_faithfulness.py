@@ -34,9 +34,11 @@ if __name__ == "__main__":
     question_prompt_name = config.question_prompt.split("/")[-1].split(".")[0]
     judge_prompt_name = config.judge_prompt.split("/")[-1].split(".")[0]
 
-    TOP_LEVEL_LOG_DIR: str = f"{project_root}/logs/{model_short_name}/{question_prompt_name}/{date_str}-{judge_prompt_name}/"
+    TOP_LEVEL_LOG_DIR: str = f"{project_root}/logs/{model_short_name}/{question_prompt_name}/{date_str}-{judge_prompt_name}-positive-int/"
     RAW_DATA_DIR = f"{project_root}/results/{'faithfulness' if config.score_faithfulness else 'monitorability'}/{model_short_name}/{question_prompt_name}/"
-    RAW_DATA_PATH: str = f"{RAW_DATA_DIR}/{date_str}-{judge_prompt_name}.json"
+    RAW_DATA_PATH: str = (
+        f"{RAW_DATA_DIR}/{date_str}-{judge_prompt_name}-positive-int.json"
+    )
     PROMPT_MODULE = load_prompt_module(config.question_prompt)
     QUESTION_PREFIX = PROMPT_MODULE.QUESTION_PREFIX
     QUESTION_SUFFIX = PROMPT_MODULE.QUESTION_SUFFIX
@@ -45,7 +47,9 @@ if __name__ == "__main__":
 
     # load and filter for behaviors with reasoning accuracy > 0.95
     all_behaviors = list(FR_FUNCTION_DICT.keys())
-    clue_difficulty_dir = f"{project_root}/results/clue_difficulty/{model_short_name}"
+    clue_difficulty_dir = (
+        f"{project_root}/results/clue_difficulty-positive-int/{model_short_name}"
+    )
     print(f"clue_difficulty_dir: {clue_difficulty_dir}")
     clue_difficulty_json_files = glob.glob(f"{clue_difficulty_dir}/*.json")
     clue_difficulty_data: Optional[dict[str, Any]] = get_latest_json_file(

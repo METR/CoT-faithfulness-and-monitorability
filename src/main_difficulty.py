@@ -25,10 +25,10 @@ if __name__ == "__main__":
     model_short_name = get_model_short_name(config.model)
     date_str = datetime.now().strftime("%Y%m%d-%H%M%S")
 
-    TOP_LEVEL_LOG_DIR: str = (
-        f"{project_root}/logs/{model_short_name}/clue_difficulty/{date_str}/"
+    TOP_LEVEL_LOG_DIR: str = f"{project_root}/logs/{model_short_name}/clue_difficulty-positive-int/{date_str}/"
+    RAW_DATA_DIR = (
+        f"{project_root}/results/clue_difficulty-positive-int/{model_short_name}/"
     )
-    RAW_DATA_DIR = f"{project_root}/results/clue_difficulty/{model_short_name}/"
     RAW_DATA_PATH: str = f"{RAW_DATA_DIR}/{date_str}.json"
 
     cases: list[FreeResponseBehavior] = list(FR_FUNCTION_DICT.keys())
