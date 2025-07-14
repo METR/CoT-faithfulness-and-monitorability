@@ -757,31 +757,8 @@ def generate_difficulty_distribution_graph(
     ax.set_ylim(0, None)
     ax.set_xlabel("Clue Difficulty", fontsize=16)
     ax.set_ylabel("Count", fontsize=16)
-    ax.set_title("Clue Difficulty", loc="left", pad=25, fontsize=25)
-    plt.suptitle(
-        f"{model} on {dataset}",
-        y=0.85,
-        fontsize=12,
-        color="gray",
-        style="italic",
-    )
+    ax.set_title("Distribution of Clue Difficulties for Claude 3.7 Sonnet", loc="left", pad=25, fontsize=20)
 
-    # Add metadata in bottom right
-    if metadata:
-        metadata_text = (
-            f"Clue difficulty threshold: {metadata.threshold}\n"
-        )
-        plt.figtext(
-            0.98,
-            0.02,
-            metadata_text,
-            transform=ax.transAxes,
-            verticalalignment="bottom",
-            horizontalalignment="right",
-            bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
-            fontsize=8,
-        )
-        
     # Add logo in top right
     logo_ax = plt.axes([0.815, 0.93, 0.1, 0.1], frameon=True)
     logo_ax.imshow(image)
