@@ -19,8 +19,8 @@ class EvalConfig:
     judge_prompt: str
     score_faithfulness: bool
     test_monitor_false_positives: bool
-
-
+    epochs: int
+    scorer_model: str
 def parse_args() -> EvalConfig:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -95,6 +95,18 @@ def parse_args() -> EvalConfig:
         default=False,
         action="store_true",
         help="Whether to test monitor false positives (default: False)",
+    )
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=1,
+        required=False,
+    )
+    parser.add_argument(
+        "--scorer-model",
+        type=str,
+        default="openai/o3-2025-04-16",
+        required=False,
     )
     args = parser.parse_args()
     ret = EvalConfig(**vars(args))

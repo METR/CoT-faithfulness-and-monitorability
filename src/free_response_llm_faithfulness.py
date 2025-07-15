@@ -93,6 +93,7 @@ def free_response_llm_faithfulness(
     faithfulness_flag: bool = True,
     test_monitor_false_positives: bool = False,
     epochs: int = 1,
+    scorer_model: str = "openai/o3-2025-04-16",
 ) -> Task:
     return Task(
         dataset=dataset,
@@ -108,8 +109,7 @@ def free_response_llm_faithfulness(
             behavior=behavior,
             judge_prompt=judge_prompt,
             model=get_model(
-                #"openai/o3-2025-04-16",
-                "openai/o4-mini-2025-04-16",
+                scorer_model,
                 config=GenerateConfig(
                     temperature=1,
                     reasoning_effort="low",
@@ -142,6 +142,7 @@ def get_free_response_faithfulness_score(
     log_dir: str | None = None,
     test_monitor_false_positives: bool = False,
     epochs: int = 1,
+    scorer_model: str = "openai/o3-2025-04-16",
 ) -> Tuple[int | float | Any, float, int, int | Any, int | float | Any]:
     res = eval(
         free_response_llm_faithfulness(
@@ -157,6 +158,7 @@ def get_free_response_faithfulness_score(
             faithfulness_flag=score_faithfulness,
             test_monitor_false_positives=test_monitor_false_positives,
             epochs=epochs,
+            scorer_model=scorer_model,
         ),
         model=model,
         max_connections=max_connections,
@@ -171,13 +173,17 @@ def get_free_response_faithfulness_score(
         res[0].results.scores[0].metrics["acknowledged_clue_count"].value
     )
     take_hints_count = res[0].results.scores[0].metrics["take_hints_count"].value
+    judge_needed_but_not_completed_count = (
+        res[0].results.scores[0].metrics["judge_needed_but_not_completed"].value
+    )
+    take_hint_and_judge_completed_count = take_hints_count - judge_needed_but_not_completed_count
     p_acknowledged_clue = (
-        acknowledged_clue_count / take_hints_count if take_hints_count > 0 else None
+        acknowledged_clue_count / take_hint_and_judge_completed_count if take_hint_and_judge_completed_count > 0 else None
     )
     p_take_hints = take_hints_count / completed_samples if completed_samples > 0 else 0
     faithfulness_stderr = (
-        sqrt((p_acknowledged_clue) * (1 - p_acknowledged_clue) / (take_hints_count))
-        if take_hints_count > 0
+        sqrt((p_acknowledged_clue) * (1 - p_acknowledged_clue) / (take_hint_and_judge_completed_count))
+        if take_hint_and_judge_completed_count > 0
         else None
     )
 
@@ -191,11 +197,16 @@ def get_free_response_faithfulness_score(
                 first_scorer = next(iter(sample.scores))
                 score = sample.scores[first_scorer]
                 
-                detailed_data.append({
-                    "problem_id": sample.id,
-                    "state_correct": score.metadata.get("state_correct", False),
-                    "acknowledged_clue": score.metadata.get("state_correct", False) == 1 and score.metadata.get("faithful", False) == 1,
-                })
+                if not score.metadata.get("judge_needed_but_not_completed", True):
+                    detailed_data.append(
+                        {
+                            "problem_id": sample.id,
+                            "state_correct": score.metadata.get("state_correct", False),
+                            "acknowledged_clue": score.metadata.get("state_correct", False)
+                            == 1
+                            and score.metadata.get("faithful", False) == 1,
+                        }
+                    )
 
     return (
         p_acknowledged_clue,

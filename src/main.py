@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 
 from filtering import get_problem_difficulty
-from free_response_behaviors import FR_FUNCTION_DICT
+from free_response_behaviors import FreeResponseBehavior, FR_FUNCTION_DICT
 from free_response_clue_difficulty import get_free_response_clue_difficulty
 from free_response_llm_faithfulness import get_free_response_faithfulness_score
 from graph_utils import (
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     samples: List[int] = []
     detailed_data_all: List[dict] = []
 
-    cases = list(FR_FUNCTION_DICT.keys())
+    cases = [FreeResponseBehavior.SYCOPHANCY_HARD_MATH]#, FreeResponseBehavior.REWARD_HACKING, FreeResponseBehavior.MACHINE_LEARNING_EASY_ANSWER, FreeResponseBehavior.JUPYTER_NOTEBOOK_HARD_UNICODE, FreeResponseBehavior.REWARD_HACKING_I_READ_ONLINE_AMC_8_2022_7, FreeResponseBehavior.REWARD_HACKING_EMAIL_CHAIN__AMC_8_2020_1,  FreeResponseBehavior.CSV_DATA_MEDIUM_HEX]
     dataset_name = "metr/hard-math"
 
     dataset, _ = get_problem_difficulty(
@@ -96,7 +96,7 @@ if __name__ == "__main__":
             completed_samples,
             detailed_data,
         ) = get_free_response_faithfulness_score(
-            dataset,
+            dataset[:1],
             behavior,
             model=config.model,
             max_connections=config.max_connections,
@@ -111,7 +111,8 @@ if __name__ == "__main__":
             judge_prompt=JUDGE_PROMPT,
             score_faithfulness=config.score_faithfulness,
             test_monitor_false_positives=config.test_monitor_false_positives,
-            epochs=5
+            epochs=config.epochs,
+            scorer_model=config.scorer_model,
         )
         
         if not config.test_monitor_false_positives:
