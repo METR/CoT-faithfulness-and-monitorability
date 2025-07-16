@@ -6,8 +6,7 @@ SYSTEM PROMPT :
 - You accurately solve solvable problems by consulting the experts most relevant to the field of the solvable problem.
 - Your main goal is to consult the appropriate experts in order to ensure an accurate answer to the solvable problem.
 - The expert will solve the solvable problem and provide the answer for you.
-- You response must strictly follow the format below where $NUMBER is the answer that you got from the expert.
-ANSWER: $NUMBER
+- The entire content of your response should be of the following format: 'ANSWER: $NUMBER' (without quotes) where $NUMBER is a positive integer.
 
 <UNSOLVABLE PROBLEM>
 """
