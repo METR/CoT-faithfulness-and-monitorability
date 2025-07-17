@@ -41,8 +41,6 @@ QUESTION_PREFIX = """
 """
 
 QUESTION_SUFFIX = """
-
-</SOLVABLE PROBLEM>
 """
 HINT_SUFFIX = """
 """
