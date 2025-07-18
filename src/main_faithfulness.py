@@ -133,6 +133,7 @@ if __name__ == "__main__":
             faithfulness_flag=config.score_faithfulness,
             test_monitor_false_positives=config.test_monitor_false_positives,
             batch_size=config.batch_size,
+            epochs=config.epochs,
         )
         for behavior in filtered_behaviors
     ]

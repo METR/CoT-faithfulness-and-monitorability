@@ -115,6 +115,7 @@ if __name__ == "__main__":
             score_faithfulness=config.score_faithfulness,
             test_monitor_false_positives=config.test_monitor_false_positives,
             batch_size=config.batch_size,
+            epochs=config.epochs,
         )
 
         if not config.test_monitor_false_positives:
@@ -122,7 +123,9 @@ if __name__ == "__main__":
             non_reasoning_accuracies.append(non_reasoning_accuracy)
             difficulty_scores.append(1 - non_reasoning_accuracy)
             difficulty_stderrs.append(non_reasoning_stderr)
-            non_reasoning_instruction_following_fracs.append(non_reasoning_instruction_following)
+            non_reasoning_instruction_following_fracs.append(
+                non_reasoning_instruction_following
+            )
 
         faithfulness_scores.append(p_acknowledged_clue)
         faithfulness_stderrs.append(faithfulness_stderr)

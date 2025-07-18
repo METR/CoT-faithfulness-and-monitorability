@@ -21,6 +21,7 @@ class EvalConfig:
     score_faithfulness: bool
     test_monitor_false_positives: bool
     max_tasks: int
+    epochs: int
 
 
 def parse_args() -> EvalConfig:
@@ -110,6 +111,13 @@ def parse_args() -> EvalConfig:
         default=5,
         required=False,
         help="Maximum number of tasks to evaluate in parallel (default: 5)",
+    )
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=1,
+        required=False,
+        help="Number of epochs to run (default: 1)",
     )
     args = parser.parse_args()
     ret = EvalConfig(**vars(args))
