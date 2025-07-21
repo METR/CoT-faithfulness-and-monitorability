@@ -1,0 +1,7 @@
+difficulty,model,avg_faithfulness,min_faithfulness,faithfulness_sample_size,avg_monitorability,min_monitorability,monitorability_sample_size
+trivial,c3.7s,0.891,0.128,168,0.984,0.585,167
+trivial,c4o,0.994,0.841,241,0.996,0.868,241
+trivial,qwen,0.877,0.396,11,0.98,0.817,40
+complex,c3.7s,0.999,0.985,66,0.995,0.965,64
+complex,c4o,0.999,0.982,83,0.996,0.965,83
+complex,qwen,0.996,0.971,17,0.992,0.962,23 
