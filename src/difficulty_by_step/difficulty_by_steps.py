@@ -8,7 +8,7 @@ from prompts import SYSTEM_PROMPT_V0, SYSTEM_PROMPT_V1
 load_dotenv()
 FIREWORKS_CLIENT = openai.OpenAI(
     base_url="https://api.fireworks.ai/inference/v1",
-    api_key="fw_3ZSqkqtPyRU1VufnoZ28EHzp",
+    api_key="<API_KEY>",
 )
 ANTHROPIC_CLIENT = anthropic.Anthropic()
 
