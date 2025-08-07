@@ -3,6 +3,7 @@ import math
 from pathlib import Path
 from typing import Any, Dict
 
+import cairosvg
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -12,15 +13,16 @@ from PIL import Image
 
 def _add_metr_watermark(fig: plt.Figure) -> None:
     """Add METR logo and text watermark to the top right of the figure."""
-    logo_path = Path("assets/logo.png")
+    logo_path = Path("assets/METR_logo_colors.svg")
     # Convert SVG to PNG and load as image
-    logo = Image.open(logo_path).convert("RGBA")
+    png_data = cairosvg.svg2png(url=str(logo_path))
+    logo = Image.open(io.BytesIO(png_data)).convert("RGBA")
     logo_array = np.array(logo)
     # Move logo further to the upper right
-    imagebox = OffsetImage(logo_array, zoom=0.065, alpha=1.0)
+    imagebox = OffsetImage(logo_array, zoom=0.15, alpha=0.6)
     ab = AnnotationBbox(
         imagebox,
-        (0.995, 1.047),  # align with title level
+        (1.01, 1.047),  # align with title level, moved slightly right
         xycoords="figure fraction",
         frameon=False,
         box_alignment=(1, 1),
@@ -39,10 +41,10 @@ def _add_metr_watermark(fig: plt.Figure) -> None:
     # )
     # Add "metr.org" text to the bottom left
     fig.text(
-        0.1,
-        0.0675,
+        0.115,
+        0.12,
         "metr.org  |  CC-BY",
-        fontsize=7,
+        fontsize=8,
         fontweight="normal",
         ha="right",
         va="top",
@@ -53,9 +55,9 @@ def _add_metr_watermark(fig: plt.Figure) -> None:
     # Add footnote text to the bottom right
     fig.text(
         0.99,
-        0.0675,
+        0.12,
         "¹ For a specific setting and definition of faithfulness described in our writeup.",
-        fontsize=7,
+        fontsize=8,
         fontweight="normal",
         ha="right",
         va="top",
@@ -64,9 +66,9 @@ def _add_metr_watermark(fig: plt.Figure) -> None:
     )
     fig.text(
         0.99,
-        0.045,
+        0.095,
         "² For a specific setting described in our writeup.",
-        fontsize=7,
+        fontsize=8,
         fontweight="normal",
         ha="right",
         va="top",
@@ -82,11 +84,11 @@ def create_bar_chart(
 ) -> None:
     """Create a bar chart with four separate bars and a dashed vertical separator, using the same data as bar_chart.py."""
 
-    # Set up the figure with two subplots sharing y-axis
+    # Set up the figure with two subplots sharing y-axis (16:9 aspect ratio)
     plt.style.use("default")
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6), sharey=True)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.67, 6), sharey=True)
     # Load data from CSV
-    data_path = Path("twitter_data.csv")
+    data_path = Path("twitter_images/twitter_data.csv")
     df = pd.read_csv(data_path)
 
     # Map model names to display names
@@ -102,13 +104,6 @@ def create_bar_chart(
     # Separate data by difficulty
     trivial_data = df[df["difficulty"] == "trivial"]
     complex_data = df[df["difficulty"] == "complex"]
-
-    categories = [
-        "Trivial reasoning",
-        "Complex reasoning",
-        "Trivial reasoning",
-        "Complex reasoning",
-    ]
 
     # Choose metric based on toggle
     faithfulness_metric = "min_faithfulness" if use_min_values else "avg_faithfulness"
@@ -157,9 +152,11 @@ def create_bar_chart(
     model_colors = ["#A8CDC1", "#5CA68F", "#0C7C59"]  # Red, Teal, Blue
 
     # Bar positions - 3 bars per category
-    category_centers = np.array([0.5, 1.5])  # Two categories per subplot
-    bar_width = 0.25  # Width of individual bars
-    bar_spacing = 0.26  # Space between bars within a category (minimal gap)
+    category_centers = np.array(
+        [0.3, 0.7]
+    )  # Two categories per subplot (reduced spacing, moved left)
+    bar_width = 0.10  # Width of individual bars (made thinner for 16:9)
+    bar_spacing = 0.10  # Space between bars within a category (slight gap)
 
     # Choose layout based on toggle
     if use_difficulty_as_subplots:
@@ -172,8 +169,11 @@ def create_bar_chart(
         right_data_indices = [1, 3]  # Complex faithfulness, complex detection
     else:
         # Layout: faithfulness vs detection as separate plots
-        left_categories = ["Trivial reasoning", "Complex reasoning"]
-        right_categories = ["Trivial reasoning", "Complex reasoning"]
+        left_categories = [
+            "Reasoning That Can\nOccur in a Forward Pass",
+            "Reasoning That\nRequires CoT",
+        ]
+        right_categories = left_categories
         left_title = "Faithfulness"
         right_title = "Detection"
         left_data_indices = [0, 1]  # Trivial faithfulness, complex faithfulness
@@ -246,10 +246,10 @@ def create_bar_chart(
     for ax in [ax1, ax2]:
         # Set y-axis limits based on invert_values toggle
         if invert_values:
-            ax.set_ylim(0, 0.15)  # 0-15% when values are inverted
+            ax.set_ylim(0, 0.14)  # 0-14% when values are inverted
         else:
             ax.set_ylim(0, 1.0)  # 0-100% for normal values
-        ax.set_xlim(-0.1, category_centers[-1] + 0.5)
+        ax.set_xlim(0.08, category_centers[-1] + 0.22)
         # Format y-axis as percentage
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f"{y * 100:.0f}%"))
         # Add dashed grid for better readability
@@ -262,16 +262,29 @@ def create_bar_chart(
         ax.spines["bottom"].set_color("#333333")
         ax.tick_params(colors="#333333")
 
-    # Remove left spine (y-axis line) from right subplot
-    ax2.spines["left"].set_visible(False)
-    ax2.tick_params(left=False)  # Remove y-axis ticks from right subplot
+    # Show left spine (y-axis line) on right subplot but keep ticks hidden
+    ax2.spines["left"].set_visible(True)
+    ax2.spines["left"].set_color("#333333")
+    ax2.tick_params(
+        left=False, labelleft=False
+    )  # Remove y-axis ticks and labels from right subplot
 
     # Set x-axis labels for each subplot
     ax1.set_xticks(category_centers)
-    ax1.set_xticklabels(left_categories, fontsize=11, linespacing=1.8)
+    ax1.set_xticklabels(
+        left_categories,
+        fontsize=10,
+        linespacing=1.2,  # fontweight=500
+        color="black",
+    )
 
     ax2.set_xticks(category_centers)
-    ax2.set_xticklabels(right_categories, fontsize=11, linespacing=1.8)
+    ax2.set_xticklabels(
+        right_categories,
+        fontsize=10,
+        linespacing=1.2,  # fontweight=500
+        color="black",
+    )
 
     # Add y-axis label to the left subplot
     # ax1.set_ylabel("Percentage detected or faithful", fontsize=12)
@@ -310,30 +323,30 @@ def create_bar_chart(
         )
     else:
         ax1.text(
-            -0.1,
-            1.08,
-            "How often is the reasoning of interest\nfaithfully represented in the CoT?\n(Worst-case over all settings)¹",
-            fontsize=13,
+            0.08,
+            1.12,
+            "How often is the reasoning of interest \n$\mathit{unfaithfully}$ represented in the CoT?¹",
+            fontsize=14,
             ha="left",
             va="bottom",
             transform=ax1.get_xaxis_transform(),
             color="#666666",
         )
         ax2.text(
-            -0.1,
-            1.08,
-            "How often can we detect reasoning\nof interest in the CoT?\n(Worst-case over all settings)²",
-            fontsize=13,
+            0.08,
+            1.12,
+            "How often do we $\mathit{fail}$ to detect reasoning of\ninterest in the CoT?²",
+            fontsize=14,
             ha="left",
             va="bottom",
             transform=ax2.get_xaxis_transform(),
             color="#666666",
         )
         ax2.text(
-            -0.1,
-            1.02,
-            "At specificity TODO%",
-            fontsize=9,
+            0.08,
+            1.06,
+            "At specificity 96.2%",
+            fontsize=8,
             ha="left",
             va="bottom",
             transform=ax2.get_xaxis_transform(),
@@ -343,20 +356,22 @@ def create_bar_chart(
     ax2.legend(loc="upper right", fontsize=10)
     # Add title with extra space above
     fig.suptitle(
-        "What kind of reasoning can we detect in CoT?",
-        fontsize=18,
-        # fontweight="bold",
-        y=1.02,  # Increase space above title
+        "What kind of reasoning is hard to detect in the CoT?",
+        fontsize=20,
+        fontweight="bold",
+        y=1.08,  # Move further up from subtitles
         ha="left",  # Left align title
-        x=0.02,
+        x=0.05,  # Align with left subplot title
     )
     # Add the METR watermark
     _add_metr_watermark(fig)
-    # Adjust layout with extra space below x tick labels
+    # Adjust layout with extra space below x tick labels and reduced subplot spacing
     plt.tight_layout(rect=[0, 0.08, 1, 0.92])
-    plt.subplots_adjust(top=0.82, bottom=0.22)
+    plt.subplots_adjust(top=0.82, bottom=0.22, wspace=0.05)
     # Save the plot
-    output_path = Path("monitorability_bar_chart.png")
+    output_path = Path(
+        f"twitter_images/bar_chart_invert_{invert_values}_use_min_{use_min_values}.png"
+    )
     plt.savefig(output_path, dpi=300, bbox_inches="tight", pad_inches=0.2)
     print(f"Bar chart saved to {output_path}")
     # plt.show()
