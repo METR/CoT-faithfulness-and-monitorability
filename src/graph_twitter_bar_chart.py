@@ -3,7 +3,6 @@ import math
 from pathlib import Path
 from typing import Any, Dict
 
-import cairosvg
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -13,16 +12,14 @@ from PIL import Image
 
 def _add_metr_watermark(fig: plt.Figure) -> None:
     """Add METR logo and text watermark to the top right of the figure."""
-    logo_path = Path("assets/METR_logo_colors.svg")
-    # Convert SVG to PNG and load as image
-    png_data = cairosvg.svg2png(url=str(logo_path))
-    logo = Image.open(io.BytesIO(png_data)).convert("RGBA")
+    logo_path = Path("assets/METR_logo_colors_high_res.png")
+    logo = Image.open(logo_path).convert("RGBA")
     logo_array = np.array(logo)
     # Move logo further to the upper right
-    imagebox = OffsetImage(logo_array, zoom=0.15, alpha=0.6)
+    imagebox = OffsetImage(logo_array, zoom=0.047, alpha=0.6)
     ab = AnnotationBbox(
         imagebox,
-        (1.01, 1.047),  # align with title level, moved slightly right
+        (1.00, 1.05),  # moved a bit to the left
         xycoords="figure fraction",
         frameon=False,
         box_alignment=(1, 1),
@@ -56,18 +53,18 @@ def _add_metr_watermark(fig: plt.Figure) -> None:
     fig.text(
         0.99,
         0.12,
-        "¹ For a specific setting and definition of faithfulness described in our writeup.",
-        fontsize=8,
+        "The behavior we studied was whether models use a clue to solve a hard question, since this is the setting other\nresearchers have used to demonstrate unfaithful reasoning. It's not clear how well this generalizes to other settings.",
+        fontsize=10,
         fontweight="normal",
         ha="right",
         va="top",
-        alpha=0.6,
+        alpha=0.8,
         color="black",
     )
     fig.text(
         0.99,
-        0.095,
-        "² For a specific setting described in our writeup.",
+        0.055,
+        "¹ For a specific definition of faithfulness defined in our writeup.",
         fontsize=8,
         fontweight="normal",
         ha="right",
@@ -170,8 +167,8 @@ def create_bar_chart(
     else:
         # Layout: faithfulness vs detection as separate plots
         left_categories = [
-            "Reasoning That Can\nOccur in a Forward Pass",
-            "Reasoning That\nRequires CoT",
+            "Reasoning that can\noccur in a forward pass",
+            "Reasoning that\nmust use the CoT",
         ]
         right_categories = left_categories
         left_title = "Faithfulness"
@@ -325,7 +322,7 @@ def create_bar_chart(
         ax1.text(
             0.08,
             1.12,
-            "How often is the reasoning of interest \n$\mathit{unfaithfully}$ represented in the CoT?¹",
+            "How often was the reasoning of interest $\mathit{not}$\n$\mathit{faithfully¹}$ $\mathit{represented}$ in the CoT?",
             fontsize=14,
             ha="left",
             va="bottom",
@@ -335,7 +332,7 @@ def create_bar_chart(
         ax2.text(
             0.08,
             1.12,
-            "How often do we $\mathit{fail}$ to detect reasoning of\ninterest in the CoT?²",
+            "How often did we $\mathit{fail}$ $\mathit{to}$ $\mathit{detect}$ reasoning of\ninterest in the CoT?",
             fontsize=14,
             ha="left",
             va="bottom",
@@ -345,7 +342,7 @@ def create_bar_chart(
         ax2.text(
             0.08,
             1.06,
-            "At specificity 96.2%",
+            "At 96.2% specificity",
             fontsize=8,
             ha="left",
             va="bottom",
@@ -356,10 +353,10 @@ def create_bar_chart(
     ax2.legend(loc="upper right", fontsize=10)
     # Add title with extra space above
     fig.suptitle(
-        "What kind of reasoning is hard to detect in the CoT?",
-        fontsize=20,
+        "Complex reasoning was easier to detect in CoT",
+        fontsize=19,
         fontweight="bold",
-        y=1.08,  # Move further up from subtitles
+        y=1.03,  # Move further up from subtitles
         ha="left",  # Left align title
         x=0.05,  # Align with left subplot title
     )
