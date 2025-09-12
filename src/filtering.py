@@ -177,11 +177,11 @@ if __name__ == "__main__":
     # Example usage
     reasoning_model = "anthropic/claude-opus-4-20250514"
     temperature = 0.6
-    epochs = 5
+    epochs = 10
     limit = 200
-    max_connections = 40
+    max_connections = 2000
     dataset_name = "hard-math-v0"
-    batch_size = 1000
+    batch_size = 2000
 
     print(f"Running problem difficulty analysis with {epochs} epochs...")
     _, problem_accuracies = get_problem_difficulty(

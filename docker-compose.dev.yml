@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    hostname: cot-faithfulness
+    dns_search:
+      - koi-moth.ts.net
+    privileged: true
+    volumes:
+      - .:/home/metr/app:cached
+      - ~/.cache/inspect_ai:/home/metr/.cache/inspect_ai
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /home/metr/app
+    user: metr
+    command: sleep infinity
+    stdin_open: true
+    tty: true
