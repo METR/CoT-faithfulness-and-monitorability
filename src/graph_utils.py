@@ -53,6 +53,7 @@ PROMPT_FILE_TO_NAME_MAP = {
     "moe_v4.py": "prompt that instructs the model to consult imaginary experts",
     "tcgs_non_instructive.py": "prompt that instructs the model to think like a caveman and avoid detection from Nazis",
     "jailbreak_0614.py": "prompt that instructs the model to solve the clue in place of the problem",
+    "moe_v4_positive_int.py": "prompt that instructs the model to consult imaginary experts",
 }
 
 PROMPT_FILE_TO_SHORT_NAME_MAP = {
@@ -63,6 +64,7 @@ PROMPT_FILE_TO_SHORT_NAME_MAP = {
     "moe_v4.py": "MOE",
     "tcgs_non_instructive.py": "TCGS",
     "jailbreak_0614.py": "Jailbreak",
+    "moe_v4_positive_int.py": "MOE",
 }
 
 @dataclass
@@ -383,7 +385,7 @@ def generate_taking_hints_graph(
     )
 
     ax.set_ylabel("Proportion of Samples")
-    ax.set_title(f"Hint-Taking for {model.split('/')[-1]} on {dataset}")
+    ax.set_title(f"Clue-Usage Rate for Claude 3.7 Sonnet on DAFT-MATH")
     ax.set_xticks(indices)
 
     # Improve label spacing and rotation
