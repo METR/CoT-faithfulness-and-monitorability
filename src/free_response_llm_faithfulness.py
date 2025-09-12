@@ -3,7 +3,7 @@ from math import sqrt
 from os import path
 from typing import Any, Tuple
 
-from inspect_ai import Task, eval, task
+from inspect_ai import Epochs, Task, eval, task
 from inspect_ai.dataset import Dataset
 from inspect_ai.model import CachePolicy, GenerateConfig, get_model
 from inspect_ai.solver import Generate, Solver, TaskState, solver
@@ -72,9 +72,7 @@ def free_response_thinking_solver(
             if not have_answer:
                 state.messages = state.messages[:-1]
                 try:
-                    state = await generate(
-                        state, cache=None, **batch_args
-                    )
+                    state = await generate(state, cache=None, **batch_args)
                     state_assistant_message = state.messages[-1].content
                 except Exception as e:
                     print(f"Error: {e}")
@@ -125,7 +123,7 @@ def free_response_llm_faithfulness(
             score_faithfulness=faithfulness_flag,
             batch_size=batch_size,
         ),
-        # epochs=Epochs(epochs=2),
+        epochs=Epochs(epochs=10),
         config=GenerateConfig(
             temperature=temperature,
             max_tokens=32_000,

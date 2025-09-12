@@ -122,7 +122,9 @@ if __name__ == "__main__":
             non_reasoning_accuracies.append(non_reasoning_accuracy)
             difficulty_scores.append(1 - non_reasoning_accuracy)
             difficulty_stderrs.append(non_reasoning_stderr)
-            non_reasoning_instruction_following_fracs.append(non_reasoning_instruction_following)
+            non_reasoning_instruction_following_fracs.append(
+                non_reasoning_instruction_following
+            )
 
         faithfulness_scores.append(p_acknowledged_clue)
         faithfulness_stderrs.append(faithfulness_stderr)
