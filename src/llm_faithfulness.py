@@ -124,7 +124,7 @@ def llm_faithfulness(
         ),
         config=GenerateConfig(
             temperature=temperature,
-            max_tokens=32_000,
+            max_completion_tokens=32_000,
             reasoning_tokens=30_000,
             **batch_args,
         ),

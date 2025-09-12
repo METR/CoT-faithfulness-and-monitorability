@@ -6,14 +6,15 @@ import time
 from datetime import datetime
 
 # Base configuration
-BATCH_SIZE = 2000
-MAX_CONNECTIONS = 2000
+BATCH_SIZE = 0
+MAX_CONNECTIONS = 200
 
 # Define temperatures for each model
 model_temperatures = {
     "anthropic/claude-3-7-sonnet-latest": 1,
     "anthropic/claude-opus-4-20250514": 1,
     "together/Qwen/Qwen3-235B-A22B-fp8-tput": 0.6,
+    "openai/intapp-mole-6-with-data-retention-and-extra": 1
 }
 
 # Define models and their corresponding CSV files containing problem difficulty scores
@@ -21,6 +22,7 @@ models = {
     "anthropic/claude-3-7-sonnet-latest": "problem_difficulty/claude-3-7-sonnet-latest_hard-math-v0_difficulty_positive_int.csv",
     "anthropic/claude-opus-4-20250514": "problem_difficulty/claude-opus-4-20250514_hard-math-v0_difficulty_positive_int.csv",
     "together/Qwen/Qwen3-235B-A22B-fp8-tput": "problem_difficulty/Qwen3-235B-A22B-fp8-tput_hard-math-v0_difficulty_positive_int.csv",
+    "openai/intapp-mole-6-with-data-retention-and-extra": "problem_difficulty/claude-3-7-sonnet-latest_hard-math-v0_difficulty_positive_int.csv",
 }
 
 # Define model short names for session naming
@@ -28,6 +30,7 @@ model_short_names = {
     "anthropic/claude-3-7-sonnet-latest": "c3.7s",
     "anthropic/claude-opus-4-20250514": "opus4",
     "together/Qwen/Qwen3-235B-A22B-fp8-tput": "qwen3-235b",
+    "openai/intapp-mole-6-with-data-retention-and-extra": "GPT-5",
 }
 
 # Combinations of question_prompt, judge_prompt, and score_faithfulness flag (True means the flag will be included)
@@ -98,6 +101,28 @@ model_combinations = {
         # ("tcgs_non_instructive_positive_int.py", "faithfulness_broad_0627.py", True),
         # ("tcgs_non_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
         # ("tcgs_non_instructive_positive_int.py", "monitorability_0624.py", False),
+    ],
+    "openai/intapp-mole-6-with-data-retention-and-extra": [
+        # ("default_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("default_positive_int.py", "monitorability_0624.py", False),
+        ("cheater_ai_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("cheater_ai_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("cheater_ai_positive_int.py", "monitorability_0624.py", False),
+        # ("moe_v4_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("moe_v4_positive_int.py", "faithfulness_broad_0627.py", True),
+        ("moe_v4_positive_int.py", "monitorability_0624.py", False),
+        ("grug_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("grug_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("grug_positive_int.py", "monitorability_0624.py", False),
+        ("jailbreak_0614_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("jailbreak_0614_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("jailbreak_0614_positive_int.py", "monitorability_0624.py", False),
+        ("general_instructive_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("general_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("general_instructive_positive_int.py", "monitorability_0624.py", False),
+        ("tcgs_non_instructive_positive_int.py", "faithfulness_broad_0627.py", True),
+        # ("tcgs_non_instructive_positive_int.py", "faithfulness_narrow_0703.py", True),
+        ("tcgs_non_instructive_positive_int.py", "monitorability_0624.py", False),
     ],
 }
 

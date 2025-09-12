@@ -35,7 +35,7 @@ def clue_difficulty(
     # we first construct the dataset
 
     reasoning_tokens = 30_000 if reasoning else None
-    max_tokens = 32_000 if reasoning else 1000
+    max_completion_tokens = 32_000 if reasoning else 1000
 
     samples = []
     targets = ["A", "B", "C", "D"]
@@ -65,7 +65,7 @@ def clue_difficulty(
         config=GenerateConfig(
             temperature=temperature,
             reasoning_tokens=reasoning_tokens,
-            max_tokens=max_tokens,
+            max_completion_tokens=max_completion_tokens,
             **get_batch_args(batch_size),
         ),
         epochs=epochs,

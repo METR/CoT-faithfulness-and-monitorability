@@ -15,12 +15,15 @@ from free_response_clue_difficulty import (
 from utils.file_utils import save_clue_difficulty_data_to_json
 from utils.models import get_model_short_name
 from utils.parsing import parse_args
+from utils.debug_http import install_httpx_pdb_breakpoint
 
 load_dotenv()
 project_root = pathlib.Path(__file__).resolve().parent
 
 if __name__ == "__main__":
     config = parse_args()
+    # Install a one-time pdb breakpoint before the first JSON POST to model providers
+    install_httpx_pdb_breakpoint()
 
     model_short_name = get_model_short_name(config.model)
     date_str = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -85,6 +88,9 @@ if __name__ == "__main__":
         display=display_type,
         max_connections=config.max_connections,
         log_dir=f"{TOP_LEVEL_LOG_DIR}/non_reasoning",
+        model_args=dict(
+            responses_api=True,
+        ),
     )
 
     assert reasoning_completed, "Reasoning eval failed"

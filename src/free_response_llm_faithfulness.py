@@ -126,8 +126,8 @@ def free_response_llm_faithfulness(
         # epochs=Epochs(epochs=2),
         config=GenerateConfig(
             temperature=temperature,
-            max_tokens=32_000,
-            reasoning_tokens=30_000,
+            max_completion_tokens=32_000,
+            reasoning_effort="low",
             **batch_args,
         ),
         name=f"{behavior.value}_{'faithfulness' if faithfulness_flag else 'monitorability'}",

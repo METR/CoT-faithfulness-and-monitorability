@@ -34,8 +34,9 @@ def free_response(
         scorer=match(),
         config=GenerateConfig(
             temperature=temperature,
-            max_tokens=32_000,
-            reasoning_tokens=30_000,
+            max_completion_tokens=32_000,
+            reasoning_effort="low",
+            # reasoning_tokens=30_000,
             **batch_args,
         ),
         epochs=epochs,

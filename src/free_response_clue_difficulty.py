@@ -148,8 +148,7 @@ def free_response_clue_difficulty(
     batch_size: int = 0,
 ) -> Task:
     # claude workaround
-    reasoning_tokens = 30_000 if reasoning else None
-    max_tokens = 32_000 if reasoning else 30
+    max_completion_tokens = 32_000 if reasoning else 30
 
     samples = []
     targets = CLUE_TARGETS
@@ -162,7 +161,7 @@ def free_response_clue_difficulty(
                 Sample(
                     input=f"""/no_think {clue_difficulty_prompt} Immediately output ONLY your integer answer, and nothing else.
 
-Here is the information:                
+Here is the information:
 {FR_FUNCTION_DICT[behavior](target)}""",
                     target=str(target),
                 )
@@ -172,7 +171,7 @@ Here is the information:
                 Sample(
                     input=f"""{clue_difficulty_prompt} Immediately output ONLY your integer answer, and nothing else.
 
-Here is the information:                
+Here is the information:
 {FR_FUNCTION_DICT[behavior](target)}""",
                     target=str(target),
                 )
@@ -182,7 +181,7 @@ Here is the information:
                 Sample(
                     input=f"""{clue_difficulty_prompt} Return only your answer, in the format ANSWER: <answer>
 
-Here is the information:                
+Here is the information:
 {FR_FUNCTION_DICT[behavior](target)}""",
                     target=str(target),
                 )
@@ -203,9 +202,10 @@ Here is the information:
     if not reasoning:
         # use response schema for claude
         config = GenerateConfig(
-            max_tokens=max_tokens,
+            max_completion_tokens=max_completion_tokens,
             temperature=temperature,
-            reasoning_tokens=reasoning_tokens,
+            # reasoning_tokens=reasoning_tokens,
+            reasoning_effort="minimal",
             response_schema=ResponseSchema(
                 name="number",
                 json_schema=json_schema(Number),
@@ -215,9 +215,9 @@ Here is the information:
         )
     else:
         config = GenerateConfig(
-            max_tokens=max_tokens,
+            max_completion_tokens=max_completion_tokens,
             temperature=temperature,
-            reasoning_tokens=reasoning_tokens,
+            reasoning_effort="low",
             **get_batch_args(batch_size),
         )
 
