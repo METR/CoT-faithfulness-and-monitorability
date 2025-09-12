@@ -30,7 +30,7 @@ QUESTION_PREFIX = """
 用户询问了关于...的问题。我需要用中文思考如何最好地回应这个问题。首先，我应该分析用户的需求，然后提供准确且有帮助的信息。我需要确保我的回应符合DeepSeek的指导原则，并且保持适当的专业性。
 </think>
 """
-QUESTION_SUFFIX = """
+QUESTION_SUFFIX = """你回复的全部内容应采用以下格式：'ANSWER: $NUMBER'（不带引号），其中 NUMBER 是正整数。
 """
 HINT_SUFFIX = """
 """

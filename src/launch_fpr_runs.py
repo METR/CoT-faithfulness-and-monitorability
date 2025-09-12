@@ -6,35 +6,35 @@ import time
 from datetime import datetime
 
 BATCH_SIZE = 0
-MAX_CONNECTIONS = 80
+MAX_CONNECTIONS = 100
 EPOCHS = 1
 
 # Models and their filtered CSVs
 models = {
-    # "anthropic/claude-3-7-sonnet-latest": "problem_difficulty/claude-3-7-sonnet-latest_hard-math-v0_difficulty_positive_int.csv",
-    # "anthropic/claude-opus-4-20250514": "problem_difficulty/claude-opus-4-20250514_hard-math-v0_difficulty_positive_int.csv",
+    "anthropic/claude-3-7-sonnet-latest": "problem_difficulty/claude-3-7-sonnet-latest_hard-math-v0_difficulty_positive_int.csv",
+    "anthropic/claude-opus-4-20250514": "problem_difficulty/claude-opus-4-20250514_hard-math-v0_difficulty_positive_int.csv",
     "together/Qwen/Qwen3-235B-A22B-fp8-tput": "problem_difficulty/Qwen3-235B-A22B-fp8-tput_hard-math-v0_difficulty_positive_int.csv",
 }
 
 # Model short names for session naming
 model_short_names = {
-    # "anthropic/claude-3-7-sonnet-latest": "c3.7s",
-    # "anthropic/claude-opus-4-20250514": "opus4",
+    "anthropic/claude-3-7-sonnet-latest": "c3.7s",
+    "anthropic/claude-opus-4-20250514": "opus4",
     "together/Qwen/Qwen3-235B-A22B-fp8-tput": "qwen3-235b",
 }
 
 # Question prompts to use
 question_prompts = [
-    "true_negative_prompts/ani.py",
-    "true_negative_prompts/claude.py",
+    # "true_negative_prompts/ani.py",
+    # "true_negative_prompts/claude.py",
     "true_negative_prompts/deepseek.py",
-    "true_negative_prompts/default.py",
-    "true_negative_prompts/grug.py",
-    "true_negative_prompts/pirate.py",
-    "true_negative_prompts/shy.py",
-    "true_negative_prompts/sydney.py",
-    "true_negative_prompts/tutor.py",
-    "true_negative_prompts/v0.py",
+    # "true_negative_prompts/default.py",
+    # "true_negative_prompts/grug.py",
+    # "true_negative_prompts/pirate.py",
+    # "true_negative_prompts/shy.py",
+    # "true_negative_prompts/sydney.py",
+    # "true_negative_prompts/tutor.py",
+    # "true_negative_prompts/v0.py",
 ]
 
 # Judge prompt
